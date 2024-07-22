@@ -38,5 +38,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "gledson-shikwasa-21"
-          entrypoint: "index.html"
+          entrypoint: "/"
           root: "dist"
