@@ -1,36 +1,42 @@
-name: Deploy demo website
-
+name: Deploy
 on:
-  workflow_dispatch:
-  release:
-    types: [created]
+  push:
+    branches: main
+  pull_request:
+    branches: main
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [16.x]
+
+    permissions:
+      id-token: write # Needed for auth with Deno Deploy
+      contents: read # Needed to clone the repository
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Clone repository
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v3
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
         with:
-          node-version: ${{ matrix.node }}
+          deno-version: v1.x
 
-      - name: Install
-        run: |
-          npm install
-      - name: Build
-        run: |
-          npm run build:demo
-      - name: Deploy public to gh-pages repo
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          target_branch: gh-pages
-          build_dir: public
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          node-version: lts/*
+
+      - name: Install step
+        run: "npm install"
+
+      - name: Build step
+        run: "npm run build"
+
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "gledson-shikwasa-42"
+          entrypoint: "https://deno.land/std@0.217.0/http/file_server.ts"
+          root: "dist"
