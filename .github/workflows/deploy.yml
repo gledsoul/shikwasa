@@ -37,6 +37,6 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "gledson-shikwasa-42"
-          entrypoint: "https://deno.land/std@0.217.0/http/file_server.ts"
+          project: "gledson-shikwasa-21"
+          entrypoint: "index.html"
           root: "dist"
